@@ -28,11 +28,6 @@ import {
 
 // This is sample data.
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   teams: [
     {
       name: "Acme Inc",
@@ -52,40 +47,40 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
+      title: "APIs",
       url: "#",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "History",
+          title: "My APIs",
           url: "#",
         },
         {
-          title: "Starred",
+          title: "Shared",
           url: "#",
         },
         {
-          title: "Settings",
+          title: "Recent",
           url: "#",
         },
       ],
     },
     {
-      title: "Models",
+      title: "Endpoints",
       url: "#",
       icon: Bot,
       items: [
         {
-          title: "Genesis",
+          title: "GET",
           url: "#",
         },
         {
-          title: "Explorer",
+          title: "POST",
           url: "#",
         },
         {
-          title: "Quantum",
+          title: "PUT",
           url: "#",
         },
       ],
@@ -108,7 +103,7 @@ const data = {
           url: "#",
         },
         {
-          title: "Changelog",
+          title: "API Reference",
           url: "#",
         },
       ],
@@ -131,7 +126,7 @@ const data = {
           url: "#",
         },
         {
-          title: "Limits",
+          title: "API Keys",
           url: "#",
         },
       ],
@@ -139,17 +134,17 @@ const data = {
   ],
   projects: [
     {
-      name: "Design Engineering",
+      name: "User Management",
       url: "#",
       icon: Frame,
     },
     {
-      name: "Sales & Marketing",
+      name: "Product Catalog",
       url: "#",
       icon: PieChart,
     },
     {
-      name: "Travel",
+      name: "Payment Gateway",
       url: "#",
       icon: Map,
     },
@@ -167,7 +162,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
