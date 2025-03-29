@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { GalleryVerticalEnd, Github } from "lucide-react"
 
@@ -23,6 +23,14 @@ export function LoginForm({
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    // Check if user is coming from password reset
+    if (searchParams?.get('reset') === 'successful') {
+      setSuccess('Your password has been reset successfully. Please log in with your new password.')
+    }
+  }, [searchParams])
 
   const handlePasswordAuth = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -127,6 +135,12 @@ export function LoginForm({
         </div>
       </div>
 
+      {success && (
+        <div className="text-green-600 dark:text-green-500 text-sm px-4 py-3 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 rounded-md text-center">
+          {success}
+        </div>
+      )}
+
       <Tabs defaultValue="password" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="password">Password</TabsTrigger>
@@ -157,14 +171,17 @@ export function LoginForm({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                {!isSignUp && (
+                  <div className="text-right">
+                    <Link href="/reset-password" className="text-sm text-muted-foreground hover:text-primary underline underline-offset-4">
+                      Forgot password?
+                    </Link>
+                  </div>
+                )}
               </div>
               
               {error && (
                 <div className="text-destructive text-sm">{error}</div>
-              )}
-              
-              {success && (
-                <div className="text-green-600 dark:text-green-500 text-sm">{success}</div>
               )}
               
               <Button type="submit" className="w-full" disabled={loading}>
@@ -191,10 +208,6 @@ export function LoginForm({
               
               {error && (
                 <div className="text-destructive text-sm">{error}</div>
-              )}
-              
-              {success && (
-                <div className="text-green-600 dark:text-green-500 text-sm">{success}</div>
               )}
               
               <Button type="submit" className="w-full" disabled={loading}>
