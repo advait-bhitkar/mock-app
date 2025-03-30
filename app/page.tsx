@@ -1,22 +1,54 @@
+"use client"
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, BarChart, Clock, Users } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import supabase from '@/lib/supabase';
 
 export default function Home() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const { data } = await supabase.auth.getSession();
+        setIsLoggedIn(!!data.session);
+      } catch (error) {
+        console.error('Error checking authentication:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    checkAuth();
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="py-4 px-6 border-b">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold text-primary">MockAPI</h1>
           <div>
-            <Button variant="outline" className="mr-2" asChild>
-              <Link href="/login">Sign in</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/dashboard">Get Started</Link>
-            </Button>
+            {!loading && (
+              isLoggedIn ? (
+                <Button asChild>
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" className="mr-2" asChild>
+                    <Link href="/login">Sign in</Link>
+                  </Button>
+                  <Button asChild>
+                    <Link href="/dashboard">Get Started</Link>
+                  </Button>
+                </>
+              )
+            )}
           </div>
         </div>
       </header>
@@ -30,7 +62,9 @@ export default function Home() {
               No more waiting for backend implementation.
             </p>
             <Button size="lg" className="px-8 py-6 text-lg" asChild>
-              <Link href="/login">Start for free</Link>
+              <Link href={isLoggedIn ? "/dashboard" : "/login"}>
+                {isLoggedIn ? "Go to Dashboard" : "Start for free"}
+              </Link>
             </Button>
           </div>
         </section>
@@ -157,7 +191,9 @@ export default function Home() {
               Join thousands of developers who are already using MockAPI to streamline their workflow.
             </p>
             <Button size="lg" variant="secondary" className="px-8 py-6 text-lg" asChild>
-              <Link href="/login">Get started now</Link>
+              <Link href={isLoggedIn ? "/dashboard" : "/login"}>
+                {isLoggedIn ? "Go to Dashboard" : "Get started now"}
+              </Link>
             </Button>
           </div>
         </section>
