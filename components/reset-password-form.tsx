@@ -51,7 +51,7 @@ export function ResetPasswordForm({
           // Setup the session from the hash tokens
           const setupSession = async () => {
             try {
-              const { data, error } = await supabase.auth.setSession({
+              const { error } = await supabase.auth.setSession({
                 access_token: accessToken,
                 refresh_token: refreshToken || "",
               });
@@ -73,8 +73,8 @@ export function ResetPasswordForm({
       } else {
         // Check if we have a valid session
         const checkSession = async () => {
-          const { data, error } = await supabase.auth.getSession();
-          console.log("Current session:", data.session ? "exists" : "none");
+          const { data: sessionData, error } = await supabase.auth.getSession();
+          console.log("Current session:", sessionData.session ? "exists" : "none");
           
           if (error) {
             console.error("Session error:", error);
@@ -144,7 +144,7 @@ export function ResetPasswordForm({
       
       // Update the user's password
       console.log("Updating password...")
-      const { data, error } = await supabase.auth.updateUser({
+      const { error } = await supabase.auth.updateUser({
         password: password
       })
       
@@ -192,7 +192,7 @@ export function ResetPasswordForm({
         <div className="text-center text-sm">
           {isResetMode 
             ? "Enter your new password below" 
-            : "Enter your email and we'll send you a password reset link"}
+            : "Enter your email and we&apos;ll send you a password reset link"}
         </div>
       </div>
 

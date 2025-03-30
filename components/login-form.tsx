@@ -236,7 +236,7 @@ export function LoginForm({
               }
             })
             if (error) setError(error.message)
-          } catch (err) {
+          } catch (_) {
             setError('Failed to sign in with Google')
           } finally {
             setLoading(false)
@@ -262,7 +262,7 @@ export function LoginForm({
               }
             })
             if (error) setError(error.message)
-          } catch (err) {
+          } catch (_) {
             setError('Failed to sign in with GitHub')
           } finally {
             setLoading(false)
@@ -283,7 +283,7 @@ export function LoginForm({
               }
             })
             if (error) setError(error.message)
-          } catch (err) {
+          } catch (_) {
             setError('Failed to sign in with Apple')
           } finally {
             setLoading(false)
