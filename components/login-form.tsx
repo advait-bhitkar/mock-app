@@ -139,7 +139,7 @@ export function LoginForm({
               setError(null)
               setSuccess(null)
             }}
-            className="underline underline-offset-4"
+            className="underline underline-offset-4 hover:cursor-pointer"
           >
             {isSignUp ? "Sign in" : "Sign up"}
           </button>
@@ -154,8 +154,8 @@ export function LoginForm({
 
       <Tabs defaultValue="password" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-6">
-          <TabsTrigger value="password">Password</TabsTrigger>
-          <TabsTrigger value="magic-link">Magic Link</TabsTrigger>
+          <TabsTrigger value="password" className="hover:cursor-pointer">Password</TabsTrigger>
+          <TabsTrigger value="magic-link" className="hover:cursor-pointer">Magic Link</TabsTrigger>
         </TabsList>
         
         <TabsContent value="password">
@@ -195,7 +195,7 @@ export function LoginForm({
                 <div className="text-destructive text-sm">{error}</div>
               )}
               
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full hover:cursor-pointer" disabled={loading}>
                 {loading ? "Processing..." : isSignUp ? "Sign Up" : "Sign In"}
               </Button>
             </div>
@@ -236,7 +236,7 @@ export function LoginForm({
       </div>
       
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-        <Button variant="outline" type="button" className="w-full" onClick={async () => {
+        <Button variant="outline" type="button" className="w-full hover:cursor-pointer" onClick={async () => {
           try {
             setLoading(true)
             setError(null)
@@ -262,7 +262,7 @@ export function LoginForm({
           Google
         </Button>
         
-        <Button variant="outline" type="button" className="w-full" onClick={async () => {
+        <Button variant="outline" type="button" className="w-full hover:cursor-pointer" onClick={async () => {
           try {
             setLoading(true)
             setError(null)
