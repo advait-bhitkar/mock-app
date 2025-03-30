@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { GalleryVerticalEnd } from "lucide-react"
+import { GalleryVerticalEnd, Eye, EyeOff, Check, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -18,10 +18,13 @@ export function ResetPasswordForm({
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [isResetMode, setIsResetMode] = useState(false)
+  const [passwordMatch, setPasswordMatch] = useState<boolean | null>(null)
   
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -86,6 +89,15 @@ export function ResetPasswordForm({
       }
     }
   }, [searchParams]);
+
+  // Add a useEffect to check password match when either password changes
+  useEffect(() => {
+    if (confirmPassword) {
+      setPasswordMatch(password === confirmPassword)
+    } else {
+      setPasswordMatch(null)
+    }
+  }, [password, confirmPassword])
 
   const handleRequestReset = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -201,25 +213,74 @@ export function ResetPasswordForm({
           <div className="flex flex-col gap-6">
             <div className="grid gap-3">
               <Label htmlFor="new-password">New Password</Label>
-              <Input
-                id="new-password"
-                type="password"
-                placeholder="••••••••"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <div className="relative">
+                <Input
+                  id="new-password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+              {password && password.length < 8 && (
+                <p className="text-amber-600 dark:text-amber-500 text-sm flex items-center gap-1">
+                  <X className="h-4 w-4" />
+                  Password must be at least 8 characters
+                </p>
+              )}
             </div>
             <div className="grid gap-3">
               <Label htmlFor="confirm-password">Confirm New Password</Label>
-              <Input
-                id="confirm-password"
-                type="password"
-                placeholder="••••••••"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
+              <div className="relative">
+                <Input
+                  id="confirm-password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+              {passwordMatch !== null && (
+                <p className={`${passwordMatch ? 'text-green-600 dark:text-green-500' : 'text-destructive'} text-sm flex items-center gap-1`}>
+                  {passwordMatch ? (
+                    <>
+                      <Check className="h-4 w-4" />
+                      Passwords match
+                    </>
+                  ) : (
+                    <>
+                      <X className="h-4 w-4" />
+                      Passwords do not match
+                    </>
+                  )}
+                </p>
+              )}
             </div>
             
             {error && (
