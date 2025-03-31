@@ -2,20 +2,17 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
+  LayoutDashboard,
+  Folders,
+  BarChart,
+  ScrollText,
+  Users,
+  CreditCard,
+  Settings,
   GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
 import {
@@ -36,117 +33,50 @@ const data = {
     },
     {
       name: "Acme Corp.",
-      logo: AudioWaveform,
+      logo: GalleryVerticalEnd,
       plan: "Startup",
     },
     {
       name: "Evil Corp.",
-      logo: Command,
+      logo: GalleryVerticalEnd,
       plan: "Free",
     },
   ],
   navMain: [
     {
-      title: "APIs",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "My APIs",
-          url: "#",
-        },
-        {
-          title: "Shared",
-          url: "#",
-        },
-        {
-          title: "Recent",
-          url: "#",
-        },
-      ],
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: LayoutDashboard,
     },
     {
-      title: "Endpoints",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "GET",
-          url: "#",
-        },
-        {
-          title: "POST",
-          url: "#",
-        },
-        {
-          title: "PUT",
-          url: "#",
-        },
-      ],
+      title: "Collections",
+      url: "/collections",
+      icon: Folders,
     },
     {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "API Reference",
-          url: "#",
-        },
-      ],
+      title: "Analytics",
+      url: "/analytics",
+      icon: BarChart,
+    },
+    {
+      title: "Logs",
+      url: "/logs",
+      icon: ScrollText,
+    },
+    {
+      title: "Members",
+      url: "/members",
+      icon: Users,
+    },
+    {
+      title: "Billing",
+      url: "/billing",
+      icon: CreditCard,
     },
     {
       title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "API Keys",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "User Management",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Product Catalog",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Payment Gateway",
-      url: "#",
-      icon: Map,
+      url: "/settings",
+      icon: Settings,
     },
   ],
 }
@@ -159,7 +89,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

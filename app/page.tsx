@@ -62,8 +62,8 @@ export default function Home() {
               No more waiting for backend implementation.
             </p>
             <Button size="lg" className="px-8 py-6 text-lg" asChild>
-              <Link href={isLoggedIn ? "/dashboard" : "/login"}>
-                {isLoggedIn ? "Go to Dashboard" : "Start for free"}
+              <Link href={"/login"}>
+                {"Start for free"}
               </Link>
             </Button>
           </div>
@@ -191,8 +191,8 @@ export default function Home() {
               Join thousands of developers who are already using MockAPI to streamline their workflow.
             </p>
             <Button size="lg" variant="secondary" className="px-8 py-6 text-lg" asChild>
-              <Link href={isLoggedIn ? "/dashboard" : "/login"}>
-                {isLoggedIn ? "Go to Dashboard" : "Get started now"}
+              <Link href={"/login"}>
+                {"Get started now"}
               </Link>
             </Button>
           </div>
