@@ -94,6 +94,16 @@ export function TeamSwitcher({
 
       if (team) {
         onTeamChange(team)
+        
+        // Dispatch an event to notify other components of the team change
+        const teamChangedEvent = new CustomEvent('teamChanged', { 
+          detail: { teamId: team.id }
+        })
+        window.dispatchEvent(teamChangedEvent)
+        
+        // Also store in localStorage
+        localStorage.setItem('currentTeamId', team.id)
+        
         setNewTeamName("")
         setIsCreating(false)
         if (!forceCreate) {
@@ -106,6 +116,35 @@ export function TeamSwitcher({
       setIsCreating(false)
     }
   }
+
+  // Memoize the team dropdown content
+  const dropdownItems = React.useMemo(() => 
+    teams.map((team) => (
+      <DropdownMenuItem
+        key={team.id}
+        onClick={() => {
+          onTeamChange(team)
+          // Dispatch an event to notify other components of the team change
+          const teamChangedEvent = new CustomEvent('teamChanged', { 
+            detail: { teamId: team.id }
+          })
+          window.dispatchEvent(teamChangedEvent)
+          
+          // Also store in localStorage
+          localStorage.setItem('currentTeamId', team.id)
+        }}
+        className="gap-2 p-2"
+      >
+        <div className="flex size-6 items-center justify-center rounded-md border">
+          {team.name.charAt(0).toUpperCase()}
+        </div>
+        {team.name}
+        <Check 
+          className="ml-auto h-4 w-4 opacity-0" 
+          style={{ opacity: currentTeam?.id === team.id ? 1 : 0 }} 
+        />
+      </DropdownMenuItem>
+    )), [teams, currentTeam, onTeamChange])
 
   // If being used in force create mode or no current team
   if (forceCreate || !currentTeam) {
@@ -215,20 +254,7 @@ export function TeamSwitcher({
               <DropdownMenuLabel className="text-muted-foreground text-xs">
                 Teams
               </DropdownMenuLabel>
-              {teams.map((team, index) => (
-                <DropdownMenuItem
-                  key={team.id}
-                  onClick={() => onTeamChange(team)}
-                  className="gap-2 p-2"
-                >
-                  <div className="flex size-6 items-center justify-center rounded-md border">
-                    {team.name.charAt(0).toUpperCase()}
-                  </div>
-                  {team.name}
-                  <Check className="ml-auto h-4 w-4 opacity-0" 
-                    style={{ opacity: currentTeam.id === team.id ? 1 : 0 }} />
-                </DropdownMenuItem>
-              ))}
+              {dropdownItems}
               <DropdownMenuSeparator />
               <DropdownMenuItem 
                 className="gap-2 p-2" 

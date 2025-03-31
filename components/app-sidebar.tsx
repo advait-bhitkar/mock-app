@@ -90,7 +90,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         return
       }
 
-      const { data: teams, error } = await supabase
+      // Get teams for the user
+      const { data: teamsData, error } = await supabase
         .from("teams")
         .select("*")
         .eq("user_id", user.id)
@@ -102,9 +103,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         return
       }
 
-      if (teams && teams.length > 0) {
-        setTeams(teams)
-        setCurrentTeam(teams[0])
+      if (teamsData && teamsData.length > 0) {
+        setTeams(teamsData)
+        
+        // Check if there's a saved team in localStorage
+        const savedTeamId = localStorage.getItem('currentTeamId')
+        if (savedTeamId) {
+          const savedTeam = teamsData.find(t => t.id === savedTeamId)
+          if (savedTeam) {
+            setCurrentTeam(savedTeam)
+            setForceCreateTeam(false)
+            setIsLoading(false)
+            return
+          }
+        }
+        
+        // If no saved team or saved team not found, use the first team
+        setCurrentTeam(teamsData[0])
+        localStorage.setItem('currentTeamId', teamsData[0].id)
         setForceCreateTeam(false)
       } else {
         setTeams([])
@@ -125,6 +141,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const handleTeamChange = React.useCallback((team: Team) => {
     if (team) {
       setCurrentTeam(team)
+      
+      // Store the current team in localStorage
+      localStorage.setItem('currentTeamId', team.id)
       
       // If this is a new team not in the list, add it
       if (!teams.some(t => t.id === team.id)) {
