@@ -1,8 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronsUpDown, Plus } from "lucide-react"
+import { Loader2, Check, ChevronsUpDown, Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { addTeamCreatorAsMember } from "@/lib/members"
 
 import {
   DropdownMenu,
@@ -78,7 +79,8 @@ export function TeamSwitcher({
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error("No user found")
 
-      const { data: team, error } = await supabase
+      // First create the team
+      const { data: team, error: teamError } = await supabase
         .from("teams")
         .insert([
           {
@@ -90,29 +92,42 @@ export function TeamSwitcher({
         .select()
         .single()
 
-      if (error) throw error
-
-      if (team) {
-        onTeamChange(team)
-        
-        // Dispatch an event to notify other components of the team change
-        const teamChangedEvent = new CustomEvent('teamChanged', { 
-          detail: { teamId: team.id }
-        })
-        window.dispatchEvent(teamChangedEvent)
-        
-        // Also store in localStorage
-        localStorage.setItem('currentTeamId', team.id)
-        
-        setNewTeamName("")
-        setIsCreating(false)
-        if (!forceCreate) {
-          setShowDialog(false)
-        }
-        router.refresh()
+      if (teamError) {
+        console.error("Error creating team:", teamError)
+        throw new Error(`Failed to create team: ${teamError.message}`)
       }
+
+      if (!team) {
+        throw new Error("Team creation failed: No team data returned")
+      }
+
+      try {
+        // Then add the creator as an admin member
+        await addTeamCreatorAsMember(team.id, user.id)
+      } catch (memberError) {
+        console.error("Error adding creator as member:", memberError)
+        // Don't throw here, as the team was created successfully
+      }
+      
+      onTeamChange(team)
+      
+      // Dispatch an event to notify other components of the team change
+      const teamChangedEvent = new CustomEvent('teamChanged', { 
+        detail: { teamId: team.id }
+      })
+      window.dispatchEvent(teamChangedEvent)
+      
+      // Also store in localStorage
+      localStorage.setItem('currentTeamId', team.id)
+      
+      setNewTeamName("")
+      setIsCreating(false)
+      if (!forceCreate) {
+        setShowDialog(false)
+      }
+      router.refresh()
     } catch (error) {
-      console.error("Error creating team:", error)
+      console.error("Error in handleCreateTeam:", error)
       setIsCreating(false)
     }
   }
