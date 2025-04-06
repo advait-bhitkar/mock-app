@@ -92,10 +92,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       // Get teams for the user
       const { data: teamsData, error } = await supabase
-        .from("teams")
-        .select("*")
-        .eq("user_id", user.id)
-        .order('created_at', { ascending: false })
+        .rpc('get_user_teams')
 
       if (error) {
         console.error("Error loading teams:", error)

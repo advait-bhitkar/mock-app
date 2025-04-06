@@ -16,11 +16,7 @@ export async function getTeamMembers(teamId: string): Promise<Member[]> {
   return data || []
 }
 
-export async function addTeamMember(
-  teamId: string,
-  email: string,
-  role: MemberRole
-): Promise<{ status: 'added' | 'invited', member?: Member, inviteToken?: string }> {
+export async function addTeamMember(teamId: string, email: string, role: MemberRole = 'viewer'): Promise<{ success: boolean; message: string }> {
   try {
     // First check if the user is already a member of the team
     const { data: existingMember, error: memberError } = await supabase
@@ -31,52 +27,38 @@ export async function addTeamMember(
       .single()
 
     if (memberError && memberError.code !== 'PGRST116') { // PGRST116 is "not found" error
-      console.error("Error checking existing member:", memberError)
-      throw new Error(memberError.message || "Failed to check existing member")
+      throw new Error("Failed to check existing member")
     }
 
     if (existingMember) {
       throw new Error("User is already a member of this team")
     }
 
-    // Call the invitation function
-    const { data, error } = await supabase
-      .rpc('handle_user_invitation', {
-        p_email: email,
-        p_name: email.split('@')[0], // Default name from email
-        p_avatar_url: null,
-        p_team_id: teamId,
-        p_role: role
+    // Generate a unique invitation token
+    const token = crypto.randomUUID()
+    
+    // Create the invitation
+    const { error: inviteError } = await supabase
+      .from("invitations")
+      .insert({
+        team_id: teamId,
+        email: email,
+        role: role,
+        token: token,
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
+        created_at: new Date().toISOString()
       })
 
-    if (error) {
-      console.error("Error handling user invitation:", error)
-      throw new Error(error.message || "Failed to handle user invitation")
+    if (inviteError) {
+      throw new Error("Failed to create invitation")
     }
 
-    if (!data) {
-      throw new Error("No data returned from invitation function")
-    }
+    // Send invitation email
+    await sendInvitationEmail(email, token)
 
-    if (data.status === 'invited') {
-      // Send invitation email
-      await sendInvitationEmail(email, data.token)
-      return { status: 'invited', inviteToken: data.token }
-    } else {
-      // User already exists, get the member details
-      const { data: memberData, error: memberError } = await supabase
-        .from("members")
-        .select("*")
-        .eq("team_id", teamId)
-        .eq("user_id", data.user_id)
-        .single()
-
-      if (memberError) {
-        console.error("Error fetching new member:", memberError)
-        throw new Error(memberError.message || "Failed to fetch new member")
-      }
-
-      return { status: 'added', member: memberData }
+    return {
+      success: true,
+      message: "Invitation sent successfully"
     }
   } catch (error) {
     console.error("Error in addTeamMember:", error)
@@ -141,14 +123,27 @@ export async function addTeamCreatorAsMember(teamId: string, userId: string): Pr
 }
 
 async function sendInvitationEmail(email: string, token: string) {
-  // TODO: Implement email sending
-  // This is a placeholder for the actual email sending implementation
-  console.log(`Sending invitation email to ${email} with token ${token}`)
-  
-  // In a real implementation, you would:
-  // 1. Generate an invitation link with the token
-  // 2. Send an email with the link using your email service
-  // 3. Handle the invitation acceptance in your API
+  try {
+    const response = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, token }),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      console.error("Email sending error:", data.error)
+      throw new Error(data.error || "Failed to send invitation email")
+    }
+
+    return data
+  } catch (error) {
+    console.error("Error in sendInvitationEmail:", error)
+    throw error instanceof Error ? error : new Error("An unexpected error occurred")
+  }
 }
 
 export async function updateMemberRole(
