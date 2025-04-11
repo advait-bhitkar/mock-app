@@ -1,70 +1,81 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { NextResponse } from 'next/server'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
+// Define all the route handlers following Next.js standards
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  context: { params: { id: string } }
 ) {
-  return handleRequest(request, params.id, 'GET')
+  const endpointId = context.params.id
+  return handleMockRequest(endpointId, 'GET')
 }
 
 export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  context: { params: { id: string } }
 ) {
-  return handleRequest(request, params.id, 'POST')
+  const endpointId = context.params.id
+  return handleMockRequest(endpointId, 'POST')
 }
 
 export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  context: { params: { id: string } }
 ) {
-  return handleRequest(request, params.id, 'PUT')
+  const endpointId = context.params.id
+  return handleMockRequest(endpointId, 'PUT')
 }
 
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  context: { params: { id: string } }
 ) {
-  return handleRequest(request, params.id, 'DELETE')
+  const endpointId = context.params.id
+  return handleMockRequest(endpointId, 'DELETE')
 }
 
 export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  context: { params: { id: string } }
 ) {
-  return handleRequest(request, params.id, 'PATCH')
+  const endpointId = context.params.id
+  return handleMockRequest(endpointId, 'PATCH')
 }
 
 export async function OPTIONS(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  context: { params: { id: string } }
 ) {
-  // For preflight requests, return a successful response with appropriate CORS headers
-  return new NextResponse(null, {
+  return NextResponse.json({}, {
     status: 204,
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    },
+    }
   })
 }
 
-async function handleRequest(
-  request: NextRequest,
-  endpointId: string,
-  method: string
-) {
-  // Initialize the Supabase client
-  const supabase = createRouteHandlerClient({ cookies })
+// Common handler for all requests
+async function handleMockRequest(endpointId: string, method: string) {
+  const supabase = createClientComponentClient()
   
   try {
-    // Log the request for analytics (optional)
-    await logRequest(supabase, endpointId, method)
+    // Try to log the request for analytics
+    try {
+      await supabase
+        .from('request_logs')
+        .insert([{
+          endpoint_id: endpointId,
+          method,
+          timestamp: new Date().toISOString()
+        }])
+    } catch (logError) {
+      console.error('Failed to log request:', logError)
+      // Continue even if logging fails
+    }
     
-    // Fetch the endpoint configuration
+    // Get the endpoint configuration
     const { data: endpoint, error } = await supabase
       .from('endpoints')
       .select('*')
@@ -72,35 +83,33 @@ async function handleRequest(
       .single()
     
     if (error || !endpoint) {
-      return new NextResponse(
-        JSON.stringify({ error: 'Endpoint not found' }),
-        {
+      return NextResponse.json(
+        { error: 'Endpoint not found' },
+        { 
           status: 404,
           headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-          },
+            'Access-Control-Allow-Origin': '*'
+          }
         }
       )
     }
     
-    // Check if the request method matches the endpoint's configured method
+    // Check if method is allowed
     if (endpoint.method !== method) {
-      return new NextResponse(
-        JSON.stringify({ error: `Method ${method} not allowed for this endpoint` }),
-        {
+      return NextResponse.json(
+        { error: `Method ${method} not allowed` },
+        { 
           status: 405,
           headers: {
-            'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Allow': endpoint.method,
-          },
+            'Allow': endpoint.method
+          }
         }
       )
     }
     
-    // Parse the response body (stored as a string in the database)
-    let responseBody: any
+    // Parse the response body
+    let responseBody
     try {
       responseBody = JSON.parse(endpoint.response_body)
     } catch (e) {
@@ -108,45 +117,25 @@ async function handleRequest(
     }
     
     // Return the configured response
-    return new NextResponse(
-      JSON.stringify(responseBody),
-      {
+    return NextResponse.json(
+      responseBody,
+      { 
         status: endpoint.status_code,
         headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        },
+          'Access-Control-Allow-Origin': '*'
+        }
       }
     )
   } catch (err) {
     console.error('Error handling mock request:', err)
-    return new NextResponse(
-      JSON.stringify({ error: 'Internal server error' }),
-      {
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { 
         status: 500,
         headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        },
+          'Access-Control-Allow-Origin': '*'
+        }
       }
     )
-  }
-}
-
-// Function to log API requests for analytics
-async function logRequest(supabase: any, endpointId: string, method: string) {
-  try {
-    await supabase
-      .from('request_logs')
-      .insert([
-        {
-          endpoint_id: endpointId,
-          method: method,
-          timestamp: new Date().toISOString(),
-        }
-      ])
-  } catch (err) {
-    // Log but don't fail the request if logging fails
-    console.error('Error logging request:', err)
   }
 } 
