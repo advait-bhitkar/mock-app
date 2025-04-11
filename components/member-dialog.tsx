@@ -72,11 +72,12 @@ export function MemberDialog({
       } else {
         // Add new member
         const result = await addTeamMember(teamId, email, role)
-        setStatus(result.status)
-        
-        if (result.status === 'added') {
+        if (result.success) {
+          setStatus('invited')
           onOpenChange(false)
           router.refresh()
+        } else {
+          setError(result.message)
         }
       }
     } catch (err) {

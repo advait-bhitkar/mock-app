@@ -106,7 +106,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         // Check if there's a saved team in localStorage
         const savedTeamId = localStorage.getItem('currentTeamId')
         if (savedTeamId) {
-          const savedTeam = teamsData.find(t => t.id === savedTeamId)
+          const savedTeam = teamsData.find((t: Team) => t.id === savedTeamId)
           if (savedTeam) {
             setCurrentTeam(savedTeam)
             setForceCreateTeam(false)
@@ -143,7 +143,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       localStorage.setItem('currentTeamId', team.id)
       
       // If this is a new team not in the list, add it
-      if (!teams.some(t => t.id === team.id)) {
+      if (!teams.some((t: Team) => t.id === team.id)) {
         setTeams(prev => [team, ...prev])
       }
       

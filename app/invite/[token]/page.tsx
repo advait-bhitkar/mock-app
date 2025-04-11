@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import { Loader2, Check, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
-export default function InvitePage({ params }: { params: { token: string } }) {
+export default function InvitePage() {
+  const params = useParams()
+  const token = params.token as string
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'needs_signup'>('loading')
   const [error, setError] = useState<string | null>(null)
   const [signupData, setSignupData] = useState<{ email: string; team_id: string; role: string } | null>(null)
@@ -19,7 +21,7 @@ export default function InvitePage({ params }: { params: { token: string } }) {
       try {
         // Call the accept_invitation function
         const { data, error } = await supabase
-          .rpc('accept_invitation', { invite_token: params.token })
+          .rpc('accept_invitation', { invite_token: token })
 
         if (error) {
           throw error
@@ -60,7 +62,7 @@ export default function InvitePage({ params }: { params: { token: string } }) {
     }
 
     acceptInvitation()
-  }, [params.token, router, supabase])
+  }, [token, router, supabase])
 
   const handleSignup = () => {
     if (signupData) {
