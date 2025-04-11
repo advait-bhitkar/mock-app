@@ -231,7 +231,11 @@ export default function CollectionsPage() {
       return (
         <div className="grid auto-rows-min gap-4 md:grid-cols-2 lg:grid-cols-3">
           {collections.map(collection => (
-            <div key={collection.id} className="bg-card p-6 rounded-xl border shadow-sm hover:shadow-md transition-shadow">
+            <div 
+              key={collection.id} 
+              className="bg-card p-6 rounded-xl border shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => router.push(`/collections/${collection.id}`)}
+            >
               <h3 className="font-semibold mb-2">{collection.name}</h3>
               <p className="text-sm text-muted-foreground mb-4">{collection.description}</p>
               <div className="text-xs text-muted-foreground">{collection.endpoint_count} endpoints</div>
@@ -251,7 +255,7 @@ export default function CollectionsPage() {
         </Button>
       </div>
     )
-  }, [collections, currentTeam, isLoading, setShowDialog])
+  }, [collections, currentTeam, isLoading, setShowDialog, router])
 
   // Memoize the page title and description
   const pageHeaderContent = React.useMemo(() => (
