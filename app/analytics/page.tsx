@@ -17,9 +17,51 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BarChart3, ArrowUpRight, ArrowDownRight, Activity } from "lucide-react"
+import { BarChart3, ArrowUpRight, ArrowDownRight, Activity, Loader2 } from "lucide-react"
+import { useEffect, useState } from "react"
+
+interface AnalyticsData {
+  totalRequests: number;
+  avgResponseTime: number;
+  activeCollections: number;
+  errorRate: number;
+  comparisons: {
+    requestsChange: number;
+    responseTimeChange: number;
+    newCollections: number;
+    errorRateChange: number;
+  };
+}
 
 export default function AnalyticsPage() {
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<AnalyticsData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchAnalytics() {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/analytics');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch analytics data');
+        }
+        
+        const analyticsData = await response.json();
+        setData(analyticsData);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching analytics:', err);
+        setError('Could not load analytics data. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchAnalytics();
+  }, []);
+
   return (
     <ProtectedRoute>
       <SidebarProvider>
@@ -51,67 +93,107 @@ export default function AnalyticsPage() {
             <h1 className="text-2xl font-bold">API Analytics</h1>
             <p className="text-muted-foreground">Track usage and performance metrics for your APIs.</p>
             
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Requests</CardTitle>
-                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">245,678</div>
-                  <div className="text-xs text-muted-foreground flex items-center mt-1">
-                    <ArrowUpRight className="mr-1 h-3 w-3 text-green-500" />
-                    <span className="text-green-500">18.2%</span> from last month
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Average Response Time</CardTitle>
-                  <Activity className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">126ms</div>
-                  <div className="text-xs text-muted-foreground flex items-center mt-1">
-                    <ArrowDownRight className="mr-1 h-3 w-3 text-green-500" />
-                    <span className="text-green-500">12.5%</span> from last month
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Active Collections</CardTitle>
-                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">8</div>
-                  <div className="text-xs text-muted-foreground flex items-center mt-1">
-                    <ArrowUpRight className="mr-1 h-3 w-3 text-green-500" />
-                    <span className="text-green-500">2</span> new this month
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Error Rate</CardTitle>
-                  <Activity className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">0.42%</div>
-                  <div className="text-xs text-muted-foreground flex items-center mt-1">
-                    <ArrowDownRight className="mr-1 h-3 w-3 text-green-500" />
-                    <span className="text-green-500">0.8%</span> from last month
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <div className="bg-card p-6 rounded-xl border shadow-sm h-80 flex items-center justify-center">
-              <p className="text-muted-foreground">API usage chart will be displayed here</p>
-            </div>
+            {loading ? (
+              <div className="flex items-center justify-center h-80">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            ) : error ? (
+              <div className="text-center text-red-500 p-8">{error}</div>
+            ) : data && (
+              <>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Total Requests</CardTitle>
+                      <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{data.totalRequests.toLocaleString()}</div>
+                      <div className="text-xs text-muted-foreground flex items-center mt-1">
+                        {data.comparisons.requestsChange > 0 ? (
+                          <>
+                            <ArrowUpRight className="mr-1 h-3 w-3 text-green-500" />
+                            <span className="text-green-500">{data.comparisons.requestsChange}%</span>
+                          </>
+                        ) : (
+                          <>
+                            <ArrowDownRight className="mr-1 h-3 w-3 text-red-500" />
+                            <span className="text-red-500">{Math.abs(data.comparisons.requestsChange)}%</span>
+                          </>
+                        )}
+                        {' '}from last month
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Average Response Time</CardTitle>
+                      <Activity className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{data.avgResponseTime}ms</div>
+                      <div className="text-xs text-muted-foreground flex items-center mt-1">
+                        {data.comparisons.responseTimeChange <= 0 ? (
+                          <>
+                            <ArrowDownRight className="mr-1 h-3 w-3 text-green-500" />
+                            <span className="text-green-500">{Math.abs(data.comparisons.responseTimeChange)}%</span>
+                          </>
+                        ) : (
+                          <>
+                            <ArrowUpRight className="mr-1 h-3 w-3 text-red-500" />
+                            <span className="text-red-500">{data.comparisons.responseTimeChange}%</span>
+                          </>
+                        )}
+                        {' '}from last month
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Active Collections</CardTitle>
+                      <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{data.activeCollections}</div>
+                      <div className="text-xs text-muted-foreground flex items-center mt-1">
+                        <ArrowUpRight className="mr-1 h-3 w-3 text-green-500" />
+                        <span className="text-green-500">{data.comparisons.newCollections}</span> new this month
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Error Rate</CardTitle>
+                      <Activity className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{data.errorRate}%</div>
+                      <div className="text-xs text-muted-foreground flex items-center mt-1">
+                        {data.comparisons.errorRateChange <= 0 ? (
+                          <>
+                            <ArrowDownRight className="mr-1 h-3 w-3 text-green-500" />
+                            <span className="text-green-500">{Math.abs(data.comparisons.errorRateChange)}%</span>
+                          </>
+                        ) : (
+                          <>
+                            <ArrowUpRight className="mr-1 h-3 w-3 text-red-500" />
+                            <span className="text-red-500">{data.comparisons.errorRateChange}%</span>
+                          </>
+                        )}
+                        {' '}from last month
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+                
+                <div className="bg-card p-6 rounded-xl border shadow-sm h-80 flex items-center justify-center">
+                  <p className="text-muted-foreground">API usage chart will be displayed here</p>
+                </div>
+              </>
+            )}
           </div>
         </SidebarInset>
       </SidebarProvider>
