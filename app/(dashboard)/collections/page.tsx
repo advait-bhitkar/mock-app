@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react"
 import { Plus, Loader2 } from "lucide-react"
-import { AppSidebar } from "@/components/app-sidebar"
-import ProtectedRoute from "@/components/protected-route"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,11 +12,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 import {
   Dialog,
   DialogContent,
@@ -257,121 +251,88 @@ export default function CollectionsPage() {
     )
   }, [collections, currentTeam, isLoading, setShowDialog, router])
 
-  // Memoize the page title and description
-  const pageHeaderContent = React.useMemo(() => (
-    <>
-      <h1 className="text-2xl font-bold">API Collections</h1>
-      <p className="text-muted-foreground">
-        {currentTeam ? 
-          `Manage your API collections in the "${currentTeam.name}" workspace.` : 
-          'Select or create a workspace to manage collections.'}
-      </p>
-    </>
-  ), [currentTeam])
-  
-  // Memoize the dialog to prevent re-renders
-  const createCollectionDialog = useMemo(() => (
-    <Dialog open={showDialog} onOpenChange={setShowDialog}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Create Collection</DialogTitle>
-          <DialogDescription>
-            Add a new API collection to "{currentTeam?.name}".
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="name">Collection Name</Label>
-            <Input
-              id="name"
-              value={newCollectionName}
-              onChange={(e) => setNewCollectionName(e.target.value)}
-              placeholder="Enter collection name"
-              autoFocus
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  handleCreateCollection();
-                }
-              }}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="description">Description</Label>
-            <Input
-              id="description"
-              value={newCollectionDescription}
-              onChange={(e) => setNewCollectionDescription(e.target.value)}
-              placeholder="Enter collection description"
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button onClick={handleCreateCollection} disabled={isCreating}>
-            {isCreating ? "Creating..." : "Create Collection"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  ), [
-    showDialog, 
-    setShowDialog, 
-    newCollectionName, 
-    newCollectionDescription, 
-    currentTeam, 
-    handleCreateCollection, 
-    isCreating
-  ])
-
-  // Memoize the header
-  const pageHeader = useMemo(() => (
-    <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-      <div className="flex items-center gap-2 px-4">
-        <SidebarTrigger className="-ml-1" />
-        <Separator
-          orientation="vertical"
-          className="mr-2 data-[orientation=vertical]:h-4"
-        />
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem className="hidden md:block">
-              <BreadcrumbLink href="/dashboard">
-                {currentTeam?.name || 'MockAPI'}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator className="hidden md:block" />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Collections</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
-      <div className="ml-auto pr-4">
-        <Button 
-          onClick={() => setShowDialog(true)}
-          disabled={!currentTeam}
-        >
-          <Plus className="mr-1 h-4 w-4" />
-          Create Collection
-        </Button>
-      </div>
-    </header>
-  ), [currentTeam, setShowDialog])
-
   return (
-    <ProtectedRoute>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          {pageHeader}
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            {pageHeaderContent}
-            {collectionsContent}
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
+    <>
+      <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+        <div className="flex items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator
+            orientation="vertical"
+            className="mr-2 data-[orientation=vertical]:h-4"
+          />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbLink href="/dashboard">
+                  Dashboard
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Collections</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+        <div className="ml-auto flex gap-2 pr-4">
+          <Button size="sm" onClick={() => setShowDialog(true)}>
+            <Plus className="h-4 w-4 mr-1" />
+            New Collection
+          </Button>
+        </div>
+      </header>
+      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        {collectionsContent}
+      </div>
 
-      {createCollectionDialog}
-    </ProtectedRoute>
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create new collection</DialogTitle>
+            <DialogDescription>
+              Collections help you organize related API endpoints.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                placeholder="My Collection"
+                value={newCollectionName}
+                onChange={(e) => setNewCollectionName(e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="description">Description</Label>
+              <Input
+                id="description"
+                placeholder="Optional description"
+                value={newCollectionDescription}
+                onChange={(e) => setNewCollectionDescription(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDialog(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreateCollection}
+              disabled={isCreating || !newCollectionName.trim()}
+            >
+              {isCreating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                "Create"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 } 

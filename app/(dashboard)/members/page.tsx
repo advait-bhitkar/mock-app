@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { AppSidebar } from "@/components/app-sidebar"
-import ProtectedRoute from "@/components/protected-route"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,11 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Plus, MoreHorizontal, Loader2 } from "lucide-react"
@@ -107,118 +101,113 @@ export default function MembersPage() {
   }
 
   return (
-    <ProtectedRoute>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-            <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator
-                orientation="vertical"
-                className="mr-2 data-[orientation=vertical]:h-4"
-              />
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem className="hidden md:block">
-                    <BreadcrumbLink href="/dashboard">
-                      MockAPI
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator className="hidden md:block" />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Members</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-            </div>
-          </header>
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold">Team Members</h1>
-                <p className="text-muted-foreground">Manage your team members and their access.</p>
+    <>
+      <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+        <div className="flex items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator
+            orientation="vertical"
+            className="mr-2 data-[orientation=vertical]:h-4"
+          />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbLink href="/dashboard">
+                  Dashboard
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Members</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+      </header>
+      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Team Members</h1>
+            <p className="text-muted-foreground">Manage your team members and their access.</p>
+          </div>
+          <Button onClick={() => setShowDialog(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Member
+          </Button>
+        </div>
+        
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search members..."
+            className="w-full pl-8"
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+          />
+        </div>
+        
+        {isLoading ? (
+          <div className="flex justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : members.length > 0 ? (
+          <div className="space-y-4">
+            {members.map((member) => (
+              <div key={member.id} className="bg-card p-4 rounded-xl border shadow-sm flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Avatar>
+                    <AvatarImage src={member.avatar_url} alt={member.name} />
+                    <AvatarFallback>
+                      {member.name.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="font-medium">{member.name}</h3>
+                    <p className="text-sm text-muted-foreground">{member.email}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-sm text-muted-foreground capitalize">{member.role}</span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleUpdateMember(member)}>
+                        Update Role
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="text-destructive"
+                        onClick={() => handleRemoveMember(member.id)}
+                      >
+                        Remove Member
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <h3 className="text-lg font-medium">No members yet</h3>
+            <p className="text-muted-foreground mt-1 mb-4">
+              {searchQuery
+                ? "No members found matching your search"
+                : "Add your first team member to get started"}
+            </p>
+            {!searchQuery && (
               <Button onClick={() => setShowDialog(true)}>
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-1 h-4 w-4" />
                 Add Member
               </Button>
-            </div>
-            
-            <div className="relative w-full max-w-sm">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search members..."
-                className="w-full pl-8"
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-              />
-            </div>
-            
-            {isLoading ? (
-              <div className="flex justify-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
-            ) : members.length > 0 ? (
-              <div className="space-y-4">
-                {members.map((member) => (
-                  <div key={member.id} className="bg-card p-4 rounded-xl border shadow-sm flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <Avatar>
-                        <AvatarImage src={member.avatar_url} alt={member.name} />
-                        <AvatarFallback>
-                          {member.name.split(' ').map(n => n[0]).join('')}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h3 className="font-medium">{member.name}</h3>
-                        <p className="text-sm text-muted-foreground">{member.email}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="text-sm text-muted-foreground capitalize">{member.role}</span>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleUpdateMember(member)}>
-                            Update Role
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={() => handleRemoveMember(member.id)}
-                          >
-                            Remove Member
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <h3 className="text-lg font-medium">No members yet</h3>
-                <p className="text-muted-foreground mt-1 mb-4">
-                  {searchQuery
-                    ? "No members found matching your search"
-                    : "Add your first team member to get started"}
-                </p>
-                {!searchQuery && (
-                  <Button onClick={() => setShowDialog(true)}>
-                    <Plus className="mr-1 h-4 w-4" />
-                    Add Member
-                  </Button>
-                )}
-              </div>
             )}
           </div>
-        </SidebarInset>
-      </SidebarProvider>
+        )}
+      </div>
 
       {currentTeam && (
         <MemberDialog
@@ -237,6 +226,6 @@ export default function MembersPage() {
           } : undefined}
         />
       )}
-    </ProtectedRoute>
+    </>
   )
 } 
