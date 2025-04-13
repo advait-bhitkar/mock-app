@@ -3,8 +3,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { Plus, ArrowLeft, Loader2, Copy, Check } from "lucide-react"
-import { AppSidebar } from "@/components/app-sidebar"
-import ProtectedRoute from "@/components/protected-route"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,11 +13,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 import {
   Dialog,
   DialogContent,
@@ -408,66 +402,61 @@ export default function CollectionDetailPage() {
   ])
 
   return (
-    <ProtectedRoute>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-            <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator
-                orientation="vertical"
-                className="mr-2 data-[orientation=vertical]:h-4"
-              />
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem>
-                    <BreadcrumbLink href="/collections">
-                      Collections
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>{collection?.name || 'Loading...'}</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-            </div>
-            <div className="ml-auto pr-4">
-              <Button 
-                onClick={() => setShowAddApiDialog(true)}
-                disabled={isLoading}
-              >
-                <Plus className="mr-1 h-4 w-4" />
-                Add API
-              </Button>
-            </div>
-          </header>
-          
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold">{collection?.name || 'Loading...'}</h1>
-                <p className="text-muted-foreground">
-                  {collection?.description || 'Loading collection details...'}
-                </p>
-              </div>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => router.push('/collections')}
-              >
-                <ArrowLeft className="mr-1 h-4 w-4" />
-                Back to Collections
-              </Button>
-            </div>
-            
-            {apiListContent}
+    <>
+      <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+        <div className="flex items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator
+            orientation="vertical"
+            className="mr-2 data-[orientation=vertical]:h-4"
+          />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/collections">
+                  Collections
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>{collection?.name || 'Loading...'}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+        <div className="ml-auto pr-4">
+          <Button 
+            onClick={() => setShowAddApiDialog(true)}
+            disabled={isLoading}
+          >
+            <Plus className="mr-1 h-4 w-4" />
+            Add API
+          </Button>
+        </div>
+      </header>
+      
+      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">{collection?.name || 'Loading...'}</h1>
+            <p className="text-muted-foreground">
+              {collection?.description || 'Loading collection details...'}
+            </p>
           </div>
-        </SidebarInset>
-      </SidebarProvider>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => router.push('/collections')}
+          >
+            <ArrowLeft className="mr-1 h-4 w-4" />
+            Back to Collections
+          </Button>
+        </div>
+        
+        {apiListContent}
+      </div>
 
       {addApiDialog}
-    </ProtectedRoute>
+    </>
   )
 } 
