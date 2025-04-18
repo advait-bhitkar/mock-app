@@ -7,7 +7,7 @@ export async function GET() {
   try {
     // Get total request count
     const { data: requestsData, error: countError } = await supabase
-      .from('request_logs')
+      .from('api_logs')
       .select('*', { count: 'exact', head: true })
     
     if (countError) {
@@ -23,15 +23,16 @@ export async function GET() {
     
     // Get average response time
     const { data: responseTimes, error: responseTimeError } = await supabase
-      .from('request_logs')
-      .select('response_time')
+      .from('api_logs')
+      .select('response_time_ms')
+      .not('response_time_ms', 'is', null)
     
     if (responseTimeError) {
       throw responseTimeError
     }
     
     const avgResponseTime = responseTimes?.length > 0
-      ? Math.round(responseTimes.reduce((sum, log) => sum + (log.response_time || 0), 0) / responseTimes.length)
+      ? Math.round(responseTimes.reduce((sum, log) => sum + (log.response_time_ms || 0), 0) / responseTimes.length)
       : 0
     
     // Get active collections count (endpoints)
@@ -45,9 +46,10 @@ export async function GET() {
     
     // Get error rate (status code >= 400)
     const { data: errorLogs, error: errorLogsError } = await supabase
-      .from('request_logs')
-      .select('status_code')
-      .gte('status_code', 400)
+      .from('api_logs')
+      .select('response_status')
+      .gte('response_status', 400)
+      .not('response_status', 'is', null)
     
     if (errorLogsError) {
       throw errorLogsError

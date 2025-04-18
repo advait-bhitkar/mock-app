@@ -15,22 +15,25 @@ export async function GET(request: Request) {
   const offset = (page - 1) * limit
   
   try {
-    // Join with the endpoints table to get endpoint path information
+    // Get logs with endpoint information
     let query = supabase
-      .from('request_logs')
+      .from('api_logs')
       .select(`
         id, 
-        method,
+        mock_api_id,
+        request_headers,
         timestamp,
-        endpoint_id,
-        endpoints(path)
+        request_ip,
+        response_status,
+        response_time_ms
       `)
       .order('timestamp', { ascending: false })
       .range(offset, offset + limit - 1)
     
     // Apply filters if present
-    if (method) {
-      query = query.eq('method', method.toUpperCase())
+    if (method && typeof method === 'string') {
+      // Method filter would need to be applied on request_headers->>'method'
+      // This may not work directly with Supabase, so we'll filter client-side instead
     }
     
     // Execute the query
@@ -42,7 +45,7 @@ export async function GET(request: Request) {
     
     // Get total count for pagination
     const { data: countData, error: countError } = await supabase
-      .from('request_logs')
+      .from('api_logs')
       .select('*', { count: 'exact', head: true })
     
     if (countError) {
@@ -51,44 +54,61 @@ export async function GET(request: Request) {
     
     const totalCount = countData?.length || 0
     
-    // Standardize the log data format to match the frontend expectations
-    const logs = (rawLogs || []).map(log => {
-      // Generate mock data for fields that aren't in the database
-      const statusCodes = [200, 201, 204, 400, 401, 403, 404, 500]
-      const randomStatus = statusCodes[Math.floor(Math.random() * statusCodes.length)]
-      const responseTimes = [12, 24, 35, 48, 75, 102, 145]
-      const randomTime = responseTimes[Math.floor(Math.random() * responseTimes.length)]
-      const ipAddresses = ['192.168.1.105', '192.168.1.108', '192.168.1.110', '10.0.0.1', '10.0.0.2']
-      const randomIp = ipAddresses[Math.floor(Math.random() * ipAddresses.length)]
+    // Now get endpoint information for these logs
+    const mockApiIds = rawLogs?.map(log => log.mock_api_id).filter(Boolean) || []
+    let endpointsMap: Record<string, string> = {}
+    
+    if (mockApiIds.length > 0) {
+      const { data: endpoints } = await supabase
+        .from('endpoints')
+        .select('id, path, method')
+        .in('id', mockApiIds)
       
-      // Handle the endpoints data correctly, it might be an array or object depending on the join
-      let endpointPath = '/api/unknown'
-      if (log.endpoints) {
-        // It could be an array with one object if the join returns multiple rows
-        if (Array.isArray(log.endpoints) && log.endpoints.length > 0) {
-          endpointPath = log.endpoints[0]?.path || endpointPath
-        } else if (typeof log.endpoints === 'object') {
-          // Or a single object if the join returns a single row
-          endpointPath = (log.endpoints as any).path || endpointPath
-        }
+      if (endpoints?.length) {
+        endpointsMap = endpoints.reduce((acc, endpoint) => {
+          acc[endpoint.id] = endpoint.path
+          return acc
+        }, {} as Record<string, string>)
       }
+    }
+    
+    // Format the logs data to match frontend expectations
+    const logs = (rawLogs || []).map(log => {
+      // Get method from request headers or default to GET
+      let requestMethod = 'GET'
+      if (log.request_headers && typeof log.request_headers === 'object') {
+        requestMethod = log.request_headers.method || 'GET'
+      }
+      
+      // Get endpoint path from our endpoints map
+      const endpointPath = endpointsMap[log.mock_api_id] || '/api/unknown'
       
       return {
         id: log.id,
         timestamp: log.timestamp,
-        method: log.method,
+        method: requestMethod,
         endpoint_path: endpointPath,
-        status_code: randomStatus,
-        response_time: randomTime,
-        ip_address: randomIp
+        status_code: log.response_status || 200,
+        response_time: log.response_time_ms || 0,
+        ip_address: log.request_ip || '127.0.0.1'
       }
     })
     
-    // Filter by search term if provided (client-side filtering since we're using mock data for some fields)
-    const filteredLogs = search ? logs.filter(log => 
-      log.endpoint_path.toLowerCase().includes(search.toLowerCase()) || 
-      log.ip_address.toLowerCase().includes(search.toLowerCase())
-    ) : logs
+    // Filter by method and search if provided
+    let filteredLogs = logs
+    
+    if (method) {
+      filteredLogs = filteredLogs.filter(log => 
+        log.method.toUpperCase() === method.toUpperCase()
+      )
+    }
+    
+    if (search) {
+      filteredLogs = filteredLogs.filter(log => 
+        log.endpoint_path.toLowerCase().includes(search.toLowerCase()) || 
+        log.ip_address.toLowerCase().includes(search.toLowerCase())
+      )
+    }
     
     // Format the response
     return NextResponse.json({
