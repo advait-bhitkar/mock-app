@@ -37,6 +37,7 @@ type Team = {
   id: string
   name: string
   slug: string
+  subdomain: string
   user_id: string
   created_at: string
   updated_at: string
@@ -58,6 +59,7 @@ export function TeamSwitcher({
   const { isMobile } = useSidebar()
   const [showDialog, setShowDialog] = React.useState(forceCreate)
   const [newTeamName, setNewTeamName] = React.useState("")
+  const [newTeamSubdomain, setNewTeamSubdomain] = React.useState("")
   const [isCreating, setIsCreating] = React.useState(false)
   const router = useRouter()
 
@@ -75,6 +77,11 @@ export function TeamSwitcher({
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)/g, "")
+      
+      // Use the provided subdomain or generate one from the team name
+      const subdomain = newTeamSubdomain.trim() 
+        ? newTeamSubdomain.toLowerCase().replace(/[^a-z0-9]+/g, "")
+        : newTeamName.toLowerCase().replace(/[^a-z0-9]+/g, "")
 
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error("No user found")
@@ -86,6 +93,7 @@ export function TeamSwitcher({
           {
             name: newTeamName,
             slug,
+            subdomain,
             user_id: user.id,
           },
         ])
@@ -121,6 +129,7 @@ export function TeamSwitcher({
       localStorage.setItem('currentTeamId', team.id)
       
       setNewTeamName("")
+      setNewTeamSubdomain("")
       setIsCreating(false)
       if (!forceCreate) {
         setShowDialog(false)
@@ -185,6 +194,21 @@ export function TeamSwitcher({
               onChange={(e) => setNewTeamName(e.target.value)}
               placeholder="Enter team name"
               autoFocus
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleCreateTeam();
+                }
+              }}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="subdomain">Subdomain</Label>
+            <Input
+              id="subdomain"
+              value={newTeamSubdomain}
+              onChange={(e) => setNewTeamSubdomain(e.target.value)}
+              placeholder="Enter subdomain"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
@@ -269,7 +293,9 @@ export function TeamSwitcher({
               <DropdownMenuLabel className="text-muted-foreground text-xs">
                 Teams
               </DropdownMenuLabel>
-              {dropdownItems}
+              <div className="max-h-[300px] overflow-y-auto">
+                {dropdownItems}
+              </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
                 className="gap-2 p-2" 
@@ -301,6 +327,21 @@ export function TeamSwitcher({
                 value={newTeamName}
                 onChange={(e) => setNewTeamName(e.target.value)}
                 placeholder="Enter team name"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleCreateTeam();
+                  }
+                }}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="subdomain">Subdomain</Label>
+              <Input
+                id="subdomain"
+                value={newTeamSubdomain}
+                onChange={(e) => setNewTeamSubdomain(e.target.value)}
+                placeholder="Enter subdomain"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
