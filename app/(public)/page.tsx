@@ -12,7 +12,7 @@ export default function Home() {
       <main className="flex-1">
         <section className="py-20 text-center">
           <div className="container mx-auto px-4">
-            <h2 className="text-5xl font-bold mb-6">Create and manage mock APIs with ease</h2>
+            <h2 className="text-5xl font-bold mb-6 font-outfit">Create and manage mock APIs with ease</h2>
             <p className="text-xl text-muted-foreground mb-10 max-w-3xl mx-auto">
               Build, test, and share API mocks for rapid development and seamless collaboration.
               No more waiting for backend implementation.
@@ -28,7 +28,7 @@ export default function Home() {
         <section className="py-20 bg-muted/50">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">How it works</h2>
+              <h2 className="text-3xl font-bold mb-4 font-outfit">How it works</h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                 From idea to working API in minutes, not days
               </p>
@@ -77,7 +77,7 @@ export default function Home() {
         <section className="py-20">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">Features that make your work easier</h2>
+              <h2 className="text-3xl font-bold mb-4 font-outfit">Features that make your work easier</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -88,7 +88,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2">Authentication Simulation</h3>
+                  <h3 className="text-xl font-bold mb-2 font-outfit">Authentication Simulation</h3>
                   <p className="text-muted-foreground">
                     Test your auth flows with OAuth, JWT, or API key simulation without setting up real auth servers.
                   </p>
@@ -102,7 +102,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2">Detailed Analytics</h3>
+                  <h3 className="text-xl font-bold mb-2 font-outfit">Detailed Analytics</h3>
                   <p className="text-muted-foreground">
                     Monitor API usage with comprehensive logs showing who accessed your APIs, when, and what responses were returned.
                   </p>
@@ -116,7 +116,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2">Rate Limits & Delay Simulation</h3>
+                  <h3 className="text-xl font-bold mb-2 font-outfit">Rate Limits & Delay Simulation</h3>
                   <p className="text-muted-foreground">
                     Test how your app handles rate limits and slow responses with configurable delays and rate limiting.
                   </p>
@@ -130,7 +130,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2">Team Collaboration</h3>
+                  <h3 className="text-xl font-bold mb-2 font-outfit">Team Collaboration</h3>
                   <p className="text-muted-foreground">
                     Work together with your team by sharing workspaces and collections with flexible permission controls.
                   </p>
@@ -142,7 +142,7 @@ export default function Home() {
         
         <section className="py-20 bg-primary text-primary-foreground">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-6">Ready to speed up your development?</h2>
+            <h2 className="text-3xl font-bold mb-6 font-outfit">Ready to speed up your development?</h2>
             <p className="text-xl mb-10 max-w-3xl mx-auto">
               Join thousands of developers who are already using MockAPI to streamline their workflow.
             </p>

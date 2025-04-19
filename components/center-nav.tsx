@@ -24,7 +24,7 @@ export function CenterNav() {
             key={item.title}
             href={item.url}
             className={cn(
-              "text-sm font-medium transition-colors hover:text-foreground/80",
+              "text-sm font-medium transition-colors font-outfit hover:text-foreground/80",
               isActive 
                 ? "text-foreground" 
                 : "text-foreground/60"

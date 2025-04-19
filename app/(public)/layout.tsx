@@ -13,7 +13,7 @@ export default function PublicLayout({
     <>
       <header className="py-4 px-6 border-b">
         <div className="container mx-auto flex items-center">
-          <Link href="/" className="text-2xl font-bold text-primary">MockAPI</Link>
+          <Link href="/" className="text-2xl font-bold text-primary font-outfit">MockAPI</Link>
           
           <CenterNav />
           
