@@ -5,27 +5,29 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, BarChart, Clock, Users } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import SmarterSalesInsights from '@/components/smarter-sales-insights';
 
 export default function Home() {
   return (
     <>
       <main className="flex-1">
-        <section className="py-20 text-center">
+        <section className="py-24 text-center">
           <div className="container mx-auto px-4">
-            <h2 className="text-5xl font-bold mb-6 font-outfit">Create and manage mock APIs with ease</h2>
+            <SmarterSalesInsights className='mx-auto'/>
+            <h2 className="text-[64px] font-medium mb-3 font-outfit">Create and manage mock APIs with ease</h2>
             <p className="text-xl text-muted-foreground mb-10 max-w-3xl mx-auto">
               Build, test, and share API mocks for rapid development and seamless collaboration.
               No more waiting for backend implementation.
             </p>
-            <Button size="lg" className="px-8 py-6 text-lg" asChild>
+            <Button className="px-8 py-6 text-lg" asChild>
               <Link href={"/login"}>
-                {"Start for free"}
+                {"Get Started For Free"}
               </Link>
             </Button>
           </div>
         </section>
         
-        <section className="py-20 bg-muted/50">
+        <section className="py-24 bg-muted/50">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold mb-4 font-outfit">How it works</h2>
@@ -74,7 +76,7 @@ export default function Home() {
           </div>
         </section>
         
-        <section className="py-20">
+        <section className="py-24">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold mb-4 font-outfit">Features that make your work easier</h2>
@@ -140,7 +142,7 @@ export default function Home() {
           </div>
         </section>
         
-        <section className="py-20 bg-primary text-primary-foreground">
+        <section className="py-24 bg-primary text-primary-foreground">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-6 font-outfit">Ready to speed up your development?</h2>
             <p className="text-xl mb-10 max-w-3xl mx-auto">
