@@ -27,48 +27,51 @@ export default function Home() {
           </div>
         </section>
         
-        <section className="py-24 bg-muted/50">
+        <section className="py-24 bg-[#141a3e]">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4 font-outfit">How it works</h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              <h2 className="text-5xl text-white font-medium mb-4 font-outfit">How it works</h2>
+              <p className="text-xl text-[#FFFFFFBF] max-w-3xl mx-auto">
                 From idea to working API in minutes, not days
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <Card>
-                <CardHeader>
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary text-xl font-bold mb-4">1</div>
-                  <CardTitle>Define your APIs</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
+              <Card className='bg-[#2b3166] border-0 rounded-xl p-10'>
+                <CardContent className='flex items-center flex-col'>
+                <div className="w-12 h-12 mb-6 bg-primary/20 rounded-full flex items-center justify-center text-primary text-xl font-bold ">1</div>
+
+                  <p className='text-white font-medium text-[18px] font-outfit mb-3'>
+                  Define your APIs
+                  </p>
+                  <p className="text-[#FFFFFF99] text-[15px] text-base/7 text-center">
                     Create workspaces, collections, and define mock APIs with custom endpoints, methods, and responses.
                   </p>
                 </CardContent>
               </Card>
               
-              <Card>
-                <CardHeader>
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary text-xl font-bold mb-4">2</div>
-                  <CardTitle>Get a unique URL</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Each API you create gets its own unique URL that you can use in your application right away.
+              <Card className='bg-[#2b3166] border-0 rounded-xl p-10'>
+                <CardContent className='flex items-center flex-col'>
+                <div className="w-12 h-12 mb-6 bg-primary/20 rounded-full flex items-center justify-center text-primary text-xl font-bold ">2</div>
+
+                  <p className='text-white font-medium text-[18px] font-outfit mb-3'>
+                  Get a unique URL
+                  </p>
+                  <p className="text-[#FFFFFF99] text-[15px] text-base/7 text-center">
+                  Each API you create gets its own unique URL that you can use in your application right away.
                   </p>
                 </CardContent>
               </Card>
-              
-              <Card>
-                <CardHeader>
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary text-xl font-bold mb-4">3</div>
-                  <CardTitle>Collaborate with your team</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Invite teammates to your workspaces and work together on API mocks with real-time updates.
+
+              <Card className='bg-[#2b3166] border-0 rounded-xl p-10'>
+                <CardContent className='flex items-center flex-col'>
+                <div className="w-12 h-12 mb-6 bg-primary/20 rounded-full flex items-center justify-center text-primary text-xl font-bold ">3</div>
+
+                  <p className='text-white font-medium text-[18px] font-outfit mb-3'>
+                  Collaborate with your team
+                  </p>
+                  <p className="text-[#FFFFFF99] text-[15px] text-base/7 text-center">
+                  Invite teammates to your workspaces and work together on API mocks with real-time updates.
                   </p>
                 </CardContent>
               </Card>
