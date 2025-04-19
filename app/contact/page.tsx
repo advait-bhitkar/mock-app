@@ -4,13 +4,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Mail, MapPin, Phone } from 'lucide-react';
+import { CenterNav } from '@/components/center-nav';
 
 export default function ContactPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="py-4 px-6 border-b">
-        <div className="container mx-auto flex justify-between items-center">
+        <div className="container mx-auto flex items-center">
           <Link href="/" className="text-2xl font-bold text-primary">MockAPI</Link>
+          
+          <CenterNav />
+          
           <div>
             <Button variant="outline" className="mr-2" asChild>
               <Link href="/login">Sign in</Link>

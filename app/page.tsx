@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, BarChart, Clock, Users } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import supabase from '@/lib/supabase';
+import { CenterNav } from '@/components/center-nav';
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -30,8 +31,11 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="py-4 px-6 border-b">
-        <div className="container mx-auto flex justify-between items-center">
+        <div className="container mx-auto flex items-center">
           <h1 className="text-2xl font-bold text-primary">MockAPI</h1>
+          
+          <CenterNav />
+          
           <div>
             {!loading && (
               isLoggedIn ? (
