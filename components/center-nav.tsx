@@ -24,11 +24,16 @@ export function CenterNav() {
             key={item.title}
             href={item.url}
             className={cn(
-              "text-sm font-medium transition-colors font-outfit hover:text-foreground/80",
+              "text font-normal transition-colors hover:opacity-80",
               isActive 
                 ? "text-foreground" 
-                : "text-foreground/60"
+                : "opacity-70"
             )}
+            style={{ 
+              fontFamily: "Outfit, sans-serif",
+              color: isActive ? "#060b25" : "#64748B" ,
+              fontSize: "16px"
+            }}
           >
             {item.title}
           </Link>
