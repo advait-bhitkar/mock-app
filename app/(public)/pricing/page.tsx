@@ -1,29 +1,10 @@
 "use client"
 
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { CenterNav } from '@/components/center-nav';
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="py-4 px-6 border-b">
-        <div className="container mx-auto flex items-center">
-          <Link href="/" className="text-2xl font-bold text-primary">MockAPI</Link>
-          
-          <CenterNav />
-          
-          <div>
-            <Button variant="outline" className="mr-2" asChild>
-              <Link href="/login">Sign in</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/dashboard">Get Started</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
-      
+    <>
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4">
           <div className="space-y-6 text-center">
@@ -139,6 +120,6 @@ export default function PricingPage() {
           </div>
         </div>
       </footer>
-    </div>
+    </>
   );
 } 

@@ -1,31 +1,15 @@
+"use client"
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Mail, MapPin, Phone } from 'lucide-react';
-import { CenterNav } from '@/components/center-nav';
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="py-4 px-6 border-b">
-        <div className="container mx-auto flex items-center">
-          <Link href="/" className="text-2xl font-bold text-primary">MockAPI</Link>
-          
-          <CenterNav />
-          
-          <div>
-            <Button variant="outline" className="mr-2" asChild>
-              <Link href="/login">Sign in</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/dashboard">Get Started</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
-      
+    <>
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl font-bold mb-8 text-center">Contact Us</h1>
@@ -129,6 +113,6 @@ export default function ContactPage() {
           </div>
         </div>
       </footer>
-    </div>
+    </>
   );
 } 
